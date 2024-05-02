@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Collecting Agents</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+</head>
+<body>
+    <div class="sidebar">
+        <div class="logo">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/9/9d/Logo_Indomaret.png" alt="Indomaret Logo">
+        </div>
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="collecting-agents.html">Collecting Agents</a></li>
+            <li><a href="payment-point.html">PP Rekon</a></li>
+        </ul>
+    </div>
+    <div class="main-content">
+        <h2>Collecting Agents</h2>
+        <div>
+            <label for="dateRange">Select Date Range:</label>
+            <input type="text" id="dateRange" placeholder="Select Date Range">
+        </div>
+        <div>
+            <h3>Files</h3>
+            <ul class="file-list" id="filesList"></ul>
+            <p id="fileCount"></p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script>
+        const ftpHost = '172.20.23.43';
+        const ftpUsername = 'ftpstore';
+        const ftpPassword = 'ftpstore';
+        const ftpPath = '/data/customer/';
+
+        // Function to fetch files from the FTP server
+        function fetchFilesFromFTP(startDate, endDate) {
+            const Client = require('ftp');
+            const client = new Client();
+
+            client.on('ready', () => {
+                client.list(ftpPath, (err, list) => {
+                    if (err) {
+                        console.error(err);
+                        return;
+                    }
+
+                    const filesList = document.getElementById('filesList');
+                    const fileCount = document.getElementById('fileCount');
+
+                    // Clear previous file list and count
+                    filesList.innerHTML = '';
+                    fileCount.textContent = '';
+
+                    const filteredFiles = list.filter(file => {
+                        const fileDate = new Date(file.date);
+                        return fileDate >= startDate && fileDate <= endDate;
+                    });
+
+                    filteredFiles.forEach(file => {
+                        const li = document.createElement('li');
+                        li.textContent = file.name;
+                        filesList.appendChild(li);
+                    });
+
+                    fileCount.textContent = `Total Files: ${filteredFiles.length}`;
+
+                    client.end();
+                });
+            });
+
+            client.connect({
+                host: ftpHost,
+                user: ftpUsername,
+                password: ftpPassword
+            });
+        }
+
+        flatpickr('#dateRange', {
+            mode: 'range',
+            onChange: function(selectedDates, dateStr, instance) {
+                if (selectedDates.length === 2) {
+                    const startDate = selectedDates[0];
+                    const endDate = selectedDates[1];
+                    fetchFilesFromFTP(startDate, endDate);
+                }
+            }
+        });
+        function countFilesOnFTP(host, username, password, directory) {
+  return new Promise((resolve, reject) => {
+    const ftpClient = new Client();
+    ftpClient.on('ready', () => {
+      ftpClient.list(directory, (err, files) => {
+        if (err) {
+          reject(err);
+        } else {
+          const numFiles = files.length;
+          ftpClient.end();
+          resolve(numFiles);
+        }
+      });
+    });
+    ftpClient.on('error', (err) => {
+      reject(err);
+    });
+    ftpClient.connect({
+      ftpHost,
+      ftpUsername,
+      ftpPassword,
+    });
+  });
+}
+    </script>
+</body>
+</html>
