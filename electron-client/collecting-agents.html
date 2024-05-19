@@ -31,53 +31,43 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="utils.js"></script>
     <script>
-        const ftpHost = '172.20.23.43';
-        const ftpUsername = 'ftpstore';
-        const ftpPassword = 'ftpstore';
-        const ftpPath = '/data/customer/';
+        const { Client } = require("basic-ftp");
+        const client = new Client();
+
+        // const ftpHost = '172.20.23.43';
+        // const ftpUsername = 'ftpstore';
+        // const ftpPassword = 'ftpstore';
+        // const ftpPath = '/data/customer/';
+
 
         // Function to fetch files from the FTP server
-        function fetchFilesFromFTP(startDate, endDate) {
-            const Client = require('ftp');
-            const client = new Client();
+        async function fetchFilesFromFTP(startDate, endDate) {
+            const filesList = document.getElementById('filesList');
+            const fileCount = document.getElementById('fileCount');
 
-            client.on('ready', () => {
-                client.list(ftpPath, (err, list) => {
-                    if (err) {
-                        console.error(err);
-                        return;
-                    }
+            // Clear previous file list and count
+            filesList.innerHTML = 'Fetching data ....';
+            fileCount.textContent = '';
 
-                    const filesList = document.getElementById('filesList');
-                    const fileCount = document.getElementById('fileCount');
+            await client.access({
+                host: "test.rebex.net",
+                user: "demo",
+                password: "password",
+                secure: false
+            })
 
-                    // Clear previous file list and count
-                    filesList.innerHTML = '';
-                    fileCount.textContent = '';
-
-                    const filteredFiles = list.filter(file => {
-                        const fileDate = new Date(file.date);
-                        return fileDate >= startDate && fileDate <= endDate;
-                    });
-
-                    filteredFiles.forEach(file => {
-                        const li = document.createElement('li');
-                        li.textContent = file.name;
-                        filesList.appendChild(li);
-                    });
-
-                    fileCount.textContent = `Total Files: ${filteredFiles.length}`;
-
-                    client.end();
-                });
+            const files = await client.list()
+            filesList.innerHTML = '';
+            files.forEach(file => {
+                const li = document.createElement('li');
+                li.textContent = file.name + " | " + "modifiedAt: " +file.rawModifiedAt;
+                filesList.appendChild(li);
             });
 
-            client.connect({
-                host: ftpHost,
-                user: ftpUsername,
-                password: ftpPassword
-            });
+            client.close();
+
         }
 
         flatpickr('#dateRange', {
@@ -90,30 +80,30 @@
                 }
             }
         });
+
         function countFilesOnFTP(host, username, password, directory) {
-  return new Promise((resolve, reject) => {
-    const ftpClient = new Client();
-    ftpClient.on('ready', () => {
-      ftpClient.list(directory, (err, files) => {
-        if (err) {
-          reject(err);
-        } else {
-          const numFiles = files.length;
-          ftpClient.end();
-          resolve(numFiles);
+            return new Promise((resolve, reject) => {
+                const ftpClient = new Client();
+                ftpClient.on('ready', () => {
+                    ftpClient.list(directory, (err, files) => {
+                        if (err) {
+                            reject(err);
+                        } else {
+                            const numFiles = files.length;
+                            ftpClient.end();
+                            resolve(numFiles);
+                        }
+                    });
+                });
+                ftpClient.on('error', (err) => {
+                    reject(err);
+                });
+                
+                ftpClient.connect({ftpHost,ftpUsername,ftpPassword});
+            });
         }
-      });
-    });
-    ftpClient.on('error', (err) => {
-      reject(err);
-    });
-    ftpClient.connect({
-      ftpHost,
-      ftpUsername,
-      ftpPassword,
-    });
-  });
-}
+        
+
     </script>
 </body>
 </html>

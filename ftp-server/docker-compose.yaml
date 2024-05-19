@@ -1,0 +1,11 @@
+services:
+  ftp-server:
+    container_name: ftp-server
+    environment:
+      - FTP_PASS=123
+      - FTP_USER=user
+    image: garethflowers/ftp-server
+    ports:
+      - '21:21/tcp'
+    volumes:
+      - './data:/home/user'

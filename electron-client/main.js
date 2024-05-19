@@ -9,11 +9,13 @@ function createWindow() {
     height: 600,
     webPreferences: {
       nodeIntegration: true,
+      contextIsolation: false
     },
   });
 
   // Load the index.html file
   mainWindow.loadFile(path.join(__dirname, 'login.html'));
+  mainWindow.webContents.openDevTools()
 
 
   // Handle window close event
