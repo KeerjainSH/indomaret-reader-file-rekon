@@ -36,11 +36,10 @@
         const { Client } = require("basic-ftp");
         const client = new Client();
 
-        // const ftpHost = '172.20.23.43';
-        // const ftpUsername = 'ftpstore';
-        // const ftpPassword = 'ftpstore';
-        // const ftpPath = '/data/customer/';
-
+        const ftpHost = '172.20.23.43';
+        const ftpUsername = 'ftpstore';
+        const ftpPassword = 'ftpstore';
+        const ftpPath = './data/customer/tmp/';  // FTP path added here
 
         // Function to fetch files from the FTP server
         async function fetchFilesFromFTP(startDate, endDate) {
@@ -52,22 +51,21 @@
             fileCount.textContent = '';
 
             await client.access({
-                host: "test.rebex.net",
-                user: "demo",
-                password: "password",
+                host: ftpHost,
+                user: ftpUsername,
+                password: ftpPassword,
                 secure: false
-            })
+            });
 
-            const files = await client.list()
+            const files = await client.list(ftpPath);  // Using the ftpPath variable to list files from specific directory
             filesList.innerHTML = '';
             files.forEach(file => {
                 const li = document.createElement('li');
-                li.textContent = file.name + " | " + "modifiedAt: " +file.rawModifiedAt;
+                li.textContent = file.name + " | " + "modifiedAt: " + file.rawModifiedAt;
                 filesList.appendChild(li);
             });
 
             client.close();
-
         }
 
         flatpickr('#dateRange', {
@@ -99,7 +97,7 @@
                     reject(err);
                 });
                 
-                ftpClient.connect({ftpHost,ftpUsername,ftpPassword});
+                ftpClient.connect({host, user: username, password});
             });
         }
         
