@@ -23,15 +23,67 @@
             <label for="dateRange">Select Date Range:</label>
             <input type="text" id="dateRange" placeholder="Select Date Range">
         </div>
-        <div>
-            <h3>Files</h3>
-            <ul class="file-list" id="filesList"></ul>
-            <p id="fileCount"></p>
+
+        <div class="loading" id="loading">
+            <p>Fetching data, please wait ...</p>
+            <div class="loading-container">
+                <div class="loading-bar"></div>
+            </div>  
+        </div>   
+
+        <div class="ftp-list" id="ftp-list">
+            <div>
+                <div class="tab-header" onclick="openTab('tab1')">File Found</div>
+                <div class="tab-header" onclick="openTab('tab2')">File Not Found</div>
+                <div id="files-found">Files Found: -</div>
+                <div id="files-not-found">Files Not Found: -</div>
+            </div>
+
+            <div id="tab1" class="tab-content">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Filename</th>
+                            <th>Last Modified</th>
+                            <th>Size</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Sample data, add more rows as needed -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <div id="tab2" class="tab-content">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Filename</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Sample data, add more rows as needed -->
+                        <!-- <tr>
+                            <td>1</td>
+                            <td>file1.txt</td>
+                        </tr> -->
+                    </tbody>
+                </table>
+            </div>
+
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="./renderer_collecting_agents.js"></script>
+    <script>
+        // Open the first tab by default
+        document.addEventListener("DOMContentLoaded", function() {
+            openTab('tab1');
+        });
+    </script>    
     <script>
         function countFilesOnFTP(host, username, password, directory) {
             return new Promise((resolve, reject) => {
