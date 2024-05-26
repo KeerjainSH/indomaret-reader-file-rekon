@@ -5,13 +5,9 @@
   "main": "main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-<<<<<<< HEAD
     "rebuild": "electron-rebuild -f -w better-sqlite3",
-    "start": "electron ."
-=======
     "start": "electron .",
     "install": "npx electron-packager . --overwrite --platform=win32 --arch=x64 --out=release-builds --icon=assets/icons/win/icon.ico --prune=true --executable-name=ca-and-rekon-checker"
->>>>>>> e6b4c4c6d151ab7e17946267337357ebb5f6dfc1
   },
   "author": "",
   "license": "ISC",
@@ -25,11 +21,8 @@
     "ssh2": "^1.15.0"
   },
   "devDependencies": {
-<<<<<<< HEAD
-    "electron-rebuild": "^3.2.9"
-=======
+    "electron-rebuild": "^3.2.9",
     "electron-packager": "^17.1.2",
     "electron-winstaller": "^5.3.1"
->>>>>>> e6b4c4c6d151ab7e17946267337357ebb5f6dfc1
   }
 }
