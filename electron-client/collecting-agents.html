@@ -103,7 +103,7 @@
                     reject(err);
                 });
                 
-                ftpClient.connect({ftpHost,ftpUsername,ftpPassword});
+                ftpClient.connect({host, user: username, password});
             });
         }
         
