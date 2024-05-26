@@ -1,5 +1,8 @@
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, ipcMain } = require('electron');
+const { createReconTable, readAllReconFile, insertReconFile } = require('./helper/recon_manager');
 const path = require('path');
+const { Client } = require("basic-ftp");
+const { fetchFilesFromFTP, checkingFiles } = require('./utils');
 
 let mainWindow;
 
@@ -8,10 +11,14 @@ function createWindow() {
     width: 800,
     height: 600,
     webPreferences: {
+      preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: true,
-      contextIsolation: false
+      contextIsolation: true,
     },
   });
+
+  // Setup DB
+  createReconTable();
 
   // Load the index.html file
   mainWindow.loadFile(path.join(__dirname, 'login.html'));
@@ -25,6 +32,17 @@ function createWindow() {
 }
 
 app.on('ready', createWindow);
+
+ipcMain.on('recon_ftp_files', async (e, date) => {
+  const { startDate, endDate } = date
+  const client = new Client();
+  const ftpFiles = await fetchFilesFromFTP(client);
+  const fileNames = readAllReconFile();
+  const result = checkingFiles(ftpFiles, fileNames, startDate, endDate);
+
+  mainWindow.webContents.send('result-list-file', result)
+
+})
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
