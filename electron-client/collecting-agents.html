@@ -35,6 +35,7 @@
             <div>
                 <div class="tab-header" onclick="openTab('tab1')">File Found</div>
                 <div class="tab-header" onclick="openTab('tab2')">File Not Found</div>
+                <div class="tab-header" onclick="openTab('tab3')">Update Database Filename</div>
                 <div id="files-found">Files Found: -</div>
                 <div id="files-not-found">Files Not Found: -</div>
             </div>
@@ -56,6 +57,29 @@
             </div>
             
             <div id="tab2" class="tab-content">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Filename</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Sample data, add more rows as needed -->
+                        <!-- <tr>
+                            <td>1</td>
+                            <td>file1.txt</td>
+                        </tr> -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="tab3" class="tab-content">
+                <div class="input-container">
+                    <input type="text" id="filename" placeholder="Enter Filename...">
+                    <button onclick="insertFilename()">Submit</button>
+                </div>
+                
                 <table>
                     <thead>
                         <tr>

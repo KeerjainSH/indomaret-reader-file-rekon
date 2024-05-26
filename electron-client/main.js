@@ -42,7 +42,28 @@ ipcMain.on('recon_ftp_files', async (e, date) => {
 
   mainWindow.webContents.send('result-list-file', result)
 
-})
+});
+
+ipcMain.on('add-ftp-filename-to-db', (e, filename) => {
+  let fileNames = [];
+  try {
+    insertReconFile(filename);
+    fileNames = readAllReconFile();
+    mainWindow.webContents.send('result-ftp-filename-to-db', {insertData: true, error: false, fileNames: fileNames});
+  } catch (error) {
+    mainWindow.webContents.send('result-ftp-filename-to-db', {insertData: true, error: true, fileNames: fileNames});
+  }
+});
+
+ipcMain.on('fetch-filenames-fromdb', (e, data) => {
+  let fileNames = [];
+  try {
+    fileNames = readAllReconFile();
+    mainWindow.webContents.send('result-ftp-filename-to-db', {insertData: false, error: false, fileNames: fileNames});
+  } catch (error) {
+    mainWindow.webContents.send('result-ftp-filename-to-db', {insertData: false, error: true, fileNames: fileNames})
+  }
+});
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {

@@ -1,3 +1,7 @@
+let founds = [];
+let notFounds = [];
+console.log("HEHEHEHEHEHEHEHEH");
+
 flatpickr('#dateRange', {
     mode: 'range',
     onChange: async function(selectedDates, dateStr, instance) {
@@ -12,10 +16,7 @@ flatpickr('#dateRange', {
     }
 });
 
-let founds = [];
-let notFounds = [];
-
-function openTab(tabId) {
+async function openTab(tabId) {
     var i, tabcontent, tabheaders;
     tabcontent = document.getElementsByClassName("tab-content");
     for (i = 0; i < tabcontent.length; i++) {
@@ -29,6 +30,9 @@ function openTab(tabId) {
     document.querySelector(`.tab-header[onclick="openTab('${tabId}')"]`).classList.add("active");
 
     if (tabId === "tab1") {
+        document.getElementById("files-found").style.display = 'block';
+        document.getElementById("files-not-found").style.display = 'block';
+
          // Fill up Found List
         const foundContainer = document.getElementById("tab1");
         if (!foundContainer) return;
@@ -44,20 +48,29 @@ function openTab(tabId) {
             `;
             foundTableBody.appendChild(row);
         });
+    } else if (tabId === "tab2") {
+        document.getElementById("files-found").style.display = 'block';
+        document.getElementById("files-not-found").style.display = 'block';
+
+        // Fill up Not Found List
+        const notFoundContainer = document.getElementById("tab2");
+        if (!notFoundContainer) return;
+        const notFoundTableBody = notFoundContainer.querySelector("tbody");
+        notFoundTableBody.innerHTML = "";
+        notFounds.forEach((name, index) => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td>${index + 1}</td>
+                <td>${name}</td>
+            `;
+            notFoundTableBody.appendChild(row);
+        });
     } else {
-    // Fill up Not Found List
-    const notFoundContainer = document.getElementById("tab2");
-    if (!notFoundContainer) return;
-    const notFoundTableBody = notFoundContainer.querySelector("tbody");
-    notFoundTableBody.innerHTML = "";
-    notFounds.forEach((name, index) => {
-        const row = document.createElement("tr");
-        row.innerHTML = `
-            <td>${index + 1}</td>
-            <td>${name}</td>
-        `;
-        notFoundTableBody.appendChild(row);
-    });
+        document.getElementById("files-found").style.display = 'none';
+        document.getElementById("files-not-found").style.display = 'none';
+
+        await window.recon.fetchFileNamesFromDB();
+
     }
 }
 
@@ -92,3 +105,38 @@ window.recon.onFromIPCMain("result-list-file", (e, data) => {
         foundTableBody.appendChild(row);
     });
 })
+
+window.recon.onFromIPCMain("result-ftp-filename-to-db", (e, data) => {
+    const {error, fileNames, insertData} = data
+    if (!error) {
+        if (insertData) {
+            alert("Filename inserted succesfully");
+        }
+        const container = document.getElementById("tab3");
+        if (!container) return;
+        const tableBody = container.querySelector("tbody");
+        tableBody.innerHTML = "";
+
+        fileNames.forEach((file, index) => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td>${index + 1}</td>
+                <td>${file.file_name}</td>
+            `;
+            tableBody.appendChild(row);
+        });
+
+    } else {
+        alert("Something went wrong while fetching filenames...");
+    }
+})
+
+async function insertFilename() {
+    var input = document.getElementById("filename").value;
+    if (input) {
+        await window.recon.addFtpFilenameToDB(input);
+        document.getElementById("filename").value = "";
+    } else {
+        alert("Please enter a string.");
+    }
+}
