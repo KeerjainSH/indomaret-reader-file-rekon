@@ -1,6 +1,5 @@
 let founds = [];
 let notFounds = [];
-console.log("HEHEHEHEHEHEHEHEH");
 
 flatpickr('#dateRange', {
     mode: 'range',

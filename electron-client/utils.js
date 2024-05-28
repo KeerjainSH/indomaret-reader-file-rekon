@@ -556,31 +556,29 @@
 
 
 async function fetchFilesFromFTP(client) {
-    // const filesList = document.getElementById('filesList');
-    // const fileCount = document.getElementById('fileCount');
 
-    // // Clear previous file list and count
-    // filesList.innerHTML = 'Fetching data ....';
-    // fileCount.textContent = '';
+    try {
+        console.log("Connecting to FTP server...");
 
-    await client.access({
-        host: "test.rebex.net",
-        user: "demo",
-        password: "password",
-        secure: false
-    })
+        await client.access({
+            host: "localhost",
+            port: 21, // Specify the port separately
+            user: "user",
+            password: "password", // Use the correct password as specified in docker-compose.yml
+            secure: false
+        });
 
-    const files = await client.list()
-    // filesList.innerHTML = '';
-    // files.forEach(file => {
-    //     const li = document.createElement('li');
-    //     li.textContent = file.name + " | " + "modifiedAt: " +file.rawModifiedAt;
-    //     filesList.appendChild(li);
-    // });
+        console.log("Connected to FTP server.");
 
-    client.close();
-    return files;
+        const files = await client.list();
 
+        return files;
+    } catch (error) {
+        console.error("Error connecting to FTP server:", error);
+    } finally {
+        client.close();
+        console.log("FTP client closed.");
+    }
 }
 
 const generateFileNamesWithDates = (fileNames, startDate, endDate) => {
@@ -613,7 +611,7 @@ function checkingFiles(ftpFiles, fileNames, startDate, endDate) {
     const fileNamesWithDate = generateFileNamesWithDates(fileNames, startDate, endDate)
 
     fileNamesWithDate.forEach(name => {
-        const found = ftpFiles.find(file => file.name === name);
+        const found = ftpFiles.find(file => file.name.slice(0, file.name.lastIndexOf('.')) === name);
         if (found) {
             founds.push(found);
             return;
