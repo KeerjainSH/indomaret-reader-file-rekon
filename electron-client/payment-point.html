@@ -35,10 +35,25 @@
         <div class="recon-pp-list" id="recon-pp-ftp-list">
             <div>
                 <div class="tab-header" onclick="openTabReconPP('reconTab1')">File Found</div>
-                <div class="tab-header" onclick="openTabReconPP('reconTab2')">File Not Found</div>
-                <div class="tab-header" onclick="openTabReconPP('reconTab3')">Update Database Filename Recon PP</div>
-                <div id="files-found">Files Found: -</div>
-                <div id="files-not-found">Files Not Found: -</div>
+                <div class="tab-header" onclick="openTabReconPP('reconTab2')">Update Database Filename Recon PP</div>
+                
+                <div class="result-info">
+                    <div class="info">
+                        <div id="files-found">Status OK: -</div>
+                        <div id="files-not-found">Status NOK: -</div>
+                    </div>
+
+                    <div class="filter" id="filter">
+                        <form class="form-filter">
+                            <label for="status">Choose a status:</label>
+                            <select id="status" name="status" onchange="handleChange(event)">
+                                <option value="All">All</option>
+                                <option value="OK">OK</option>
+                                <option value="NOK">NOK</option>
+                            </select>
+                        </form>       
+                    </div>         
+                </div>
             </div>
 
             <div id="reconTab1" class="tab-content">
@@ -47,6 +62,7 @@
                         <tr>
                             <th>No</th>
                             <th>Recon PP</th>
+                            <th>Status</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -54,30 +70,18 @@
                         <tr>
                             <td>1</td>
                             <td>Rekon Harian Payment Indomaret - OVO - 2024-05-19</td>
+                            <td>OK</td>
                         </tr>
-                    </tbody>
-                </table>
-            </div>
-            
-            <div id="reconTab2" class="tab-content">
-                <table>
-                    <thead>
                         <tr>
-                            <th>No</th>
-                            <th>Recon PP</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Sample data, add more rows as needed -->
-                        <!-- <tr>
                             <td>1</td>
-                            <td>file1.txt</td>
-                        </tr> -->
+                            <td>Rekon Harian Payment Indomaret - GoPay - 2024-05-19</td>
+                            <td>NOK</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
 
-            <div id="reconTab3" class="tab-content">
+            <div id="reconTab2" class="tab-content">
                 <div class="input-container">
                     <input type="text" id="recon" placeholder="Enter Recon...">
                     <input type="text" id="partner" placeholder="Enter Partner...">

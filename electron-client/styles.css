@@ -200,6 +200,29 @@ th:first-child, td:first-child {
     background-color: #45a049;
 }
 /* End Update Filename */
+
+/* Start Result Info */
+.result-info {
+    display: flex;
+    justify-content: space-between;
+}
+/* End Result Info */
+
+/* Start Filter */
+label {
+    font-size: 16px;
+    margin-bottom: 1px;
+    display: block;
+    text-align: center;
+}
+#status {
+    width: 100%;
+    padding: 5px;
+    margin: 2px 0 5px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+/* End Filter */
 .file-list {
     list-style-type: none;
     padding: 0;

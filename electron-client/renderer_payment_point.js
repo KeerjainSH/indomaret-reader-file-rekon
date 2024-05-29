@@ -26,14 +26,13 @@ async function openTabReconPP(tabId) {
     if (tabId === "reconTab1") {
         document.getElementById("files-found").style.display = 'block';
         document.getElementById("files-not-found").style.display = 'block';
-
-    } else if (tabId === "reconTab2") {
-        document.getElementById("files-found").style.display = 'block';
-        document.getElementById("files-not-found").style.display = 'block';
+        document.getElementById("filter").style.display = 'block';
 
     } else {
         document.getElementById("files-found").style.display = 'none';
         document.getElementById("files-not-found").style.display = 'none';
+        document.getElementById("filter").style.display = 'none';
+
     }
 }
 
