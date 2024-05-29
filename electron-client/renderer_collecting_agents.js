@@ -90,7 +90,7 @@ window.recon.onFromIPCMain("result-list-file", (e, data) => {
 
     // Fill up Found List
     const foundContainer = document.getElementById("tab1");
-    if (!container) return;
+    if (!foundContainer) return;
     const foundTableBody = foundContainer.querySelector("tbody");
     foundTableBody.innerHTML = "";
     founds.forEach((file, index) => {
@@ -98,7 +98,7 @@ window.recon.onFromIPCMain("result-list-file", (e, data) => {
         row.innerHTML = `
             <td>${index + 1}</td>
             <td>${file.name}</td>
-            <td>${file.lastModified || "-"}</td>
+            <td>${file.modifiedAt || "-"}</td>
             <td>${file.size || "-" } KB</td>
         `;
         foundTableBody.appendChild(row);

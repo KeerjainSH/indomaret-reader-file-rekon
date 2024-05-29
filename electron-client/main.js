@@ -22,7 +22,7 @@ function createWindow() {
 
   // Load the index.html file
   mainWindow.loadFile(path.join(__dirname, 'login.html'));
-  // mainWindow.webContents.openDevTools()
+  mainWindow.webContents.openDevTools()
 
 
   // Handle window close event

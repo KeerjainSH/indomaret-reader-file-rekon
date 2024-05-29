@@ -561,7 +561,7 @@ async function fetchFilesFromFTP(client) {
         console.log("Connecting to FTP server...");
 
         await client.access({
-            host: "localhost",
+            host: "ftp.ftp-server.orb.local",
             port: 21, // Specify the port separately
             user: "user",
             password: "password", // Use the correct password as specified in docker-compose.yml

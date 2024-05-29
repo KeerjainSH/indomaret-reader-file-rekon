@@ -107,31 +107,6 @@
         document.addEventListener("DOMContentLoaded", function() {
             openTab('tab1');
         });
-    </script>    
-    <script>
-        function countFilesOnFTP(host, username, password, directory) {
-            return new Promise((resolve, reject) => {
-                const ftpClient = new Client();
-                ftpClient.on('ready', () => {
-                    ftpClient.list(directory, (err, files) => {
-                        if (err) {
-                            reject(err);
-                        } else {
-                            const numFiles = files.length;
-                            ftpClient.end();
-                            resolve(numFiles);
-                        }
-                    });
-                });
-                ftpClient.on('error', (err) => {
-                    reject(err);
-                });
-                
-                ftpClient.connect({host, user: username, password});
-            });
-        }
-        
-
     </script>
 </body>
 </html>
