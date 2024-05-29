@@ -1,0 +1,2 @@
+2024-05-29 08:12:40.689441|INFO|-|14547:0:1|-|cmdutils.go:160|-:cmdutils.executeWithoutRetry|-|execute_command|-:-|value=/bin/sh,args=["-c","/usr/bin/ssh -V"]
+2024-05-29 08:12:40.712607|INFO|-|14547:0:1|-|cmdutils.go:160|-:cmdutils.executeWithoutRetry|-|execute_command|-:-|value=/bin/sh,args=["-c","pkill -f ssh-agent"]
