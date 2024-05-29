@@ -21,8 +21,9 @@
     "ssh2": "^1.15.0"
   },
   "devDependencies": {
-    "electron-rebuild": "^3.2.9",
     "electron-packager": "^17.1.2",
+    "electron-rebuild": "^3.2.9",
+    "electron-reload": "^2.0.0-alpha.1",
     "electron-winstaller": "^5.3.1"
   }
 }

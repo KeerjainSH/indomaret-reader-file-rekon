@@ -22,7 +22,7 @@ function createWindow() {
 
   // Load the index.html file
   mainWindow.loadFile(path.join(__dirname, 'login.html'));
-  mainWindow.webContents.openDevTools()
+  // mainWindow.webContents.openDevTools()
 
 
   // Handle window close event
@@ -75,4 +75,9 @@ app.on('activate', () => {
   if (BrowserWindow.getAllWindows().length === 0) {
     createWindow();
   }
+});
+
+require('electron-reload')(__dirname, {
+  electron: require(`${__dirname}/node_modules/electron`),
+  watch: ['js', 'html', 'css']
 });
