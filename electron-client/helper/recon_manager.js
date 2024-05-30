@@ -98,11 +98,29 @@ const insertReconEmail = (recon, partner) => {
     }
 }
 
+const deleteReconEmail = (id) => {
+    try {
+        const insertQuery = db.prepare(
+            `DELETE FROM recon_email WHERE id=${id}`
+        )
+
+        const transaction = db.transaction(() => {
+            const info = insertQuery.run();
+        })
+        transaction()
+    } catch (err) {
+        console.error(err)
+        throw err
+    }
+}
+
+
 module.exports = {
     createReconTable,
     createReconEmailTable,
     readAllReconFile,
     insertReconFile,
     readAllReconEmail,
-    insertReconEmail
+    insertReconEmail,
+    deleteReconEmail
 }

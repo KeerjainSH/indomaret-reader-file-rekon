@@ -1,5 +1,5 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
-const { createReconTable, readAllReconFile, insertReconFile, createReconEmailTable, insertReconEmail, readAllReconEmail } = require('./helper/recon_manager');
+const { createReconTable, readAllReconFile, insertReconFile, createReconEmailTable, insertReconEmail, readAllReconEmail, deleteReconEmail } = require('./helper/recon_manager');
 const path = require('path');
 const { Client } = require("basic-ftp");
 const { fetchFilesFromFTP, checkingFiles } = require('./utils');
@@ -88,6 +88,20 @@ ipcMain.on('fetch-recon-email-fromdb', (e, data) => {
     mainWindow.webContents.send('result-recon-email-from-db', {insertData: false, error: true, recons: recons});
   }
 });
+
+ipcMain.on('delete-recon-email-fromdb', (e, id) => {
+  let recons = [];
+
+  try {
+    deleteReconEmail(id);
+
+    recons = readAllReconEmail();
+    mainWindow.webContents.send('result-recon-email-from-db', {insertData: false, error: false, recons: recons});
+  } catch (error) {
+    console.log("from main", error)
+    mainWindow.webContents.send('result-recon-email-from-db', {insertData: false, error: true, recons: recons});
+  }
+})
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {

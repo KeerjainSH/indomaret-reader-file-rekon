@@ -223,6 +223,20 @@ label {
     border-radius: 4px;
 }
 /* End Filter */
+.btn-delete {
+    background-color: #ff4d4d;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 3px;
+    font-size: 14px;
+    height: auto;
+}
+.btn-delete:hover {
+    background-color: #ff1a1a;
+}
+
 .file-list {
     list-style-type: none;
     padding: 0;

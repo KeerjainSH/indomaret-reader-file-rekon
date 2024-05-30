@@ -50,6 +50,13 @@ async function insertReconPP() {
     }
 }
 
+async function deleteItemReconEmail(id) {
+    const confirmed = confirm("Are you sure you want to delete this item?");
+    if (confirmed) {
+        await window.recon.deleteReconEmailFromDB(id);
+    }
+}
+
 window.recon.onFromIPCMain("result-recon-email-from-db", (e, data) => {
     const {error, recons, insertData} = data;
 
@@ -75,6 +82,7 @@ window.recon.onFromIPCMain("result-recon-email-from-db", (e, data) => {
             <td>${index + 1}</td>
             <td>${item.recon}</td>
             <td>${item.partner}</td>
+            <td><button class="btn-delete" id="delete-${item.id}" onclick="deleteItemReconEmail(${item.id})">Delete</button></td>
         `;
         tableBody.appendChild(row);
     });
