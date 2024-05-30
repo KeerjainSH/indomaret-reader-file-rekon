@@ -1,5 +1,5 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
-const { createReconTable, readAllReconFile, insertReconFile } = require('./helper/recon_manager');
+const { createReconTable, readAllReconFile, insertReconFile, createReconEmailTable, insertReconEmail, readAllReconEmail } = require('./helper/recon_manager');
 const path = require('path');
 const { Client } = require("basic-ftp");
 const { fetchFilesFromFTP, checkingFiles } = require('./utils');
@@ -19,6 +19,7 @@ function createWindow() {
 
   // Setup DB
   createReconTable();
+  createReconEmailTable();
 
   // Load the index.html file
   mainWindow.loadFile(path.join(__dirname, 'login.html'));
@@ -62,6 +63,29 @@ ipcMain.on('fetch-filenames-fromdb', (e, data) => {
     mainWindow.webContents.send('result-ftp-filename-to-db', {insertData: false, error: false, fileNames: fileNames});
   } catch (error) {
     mainWindow.webContents.send('result-ftp-filename-to-db', {insertData: false, error: true, fileNames: fileNames})
+  }
+});
+
+ipcMain.on('add-recon-email-to-db', (e, {recon, partner}) => {
+  let recons = [];
+
+  try {
+    insertReconEmail(recon, partner);
+    recons = readAllReconEmail();
+    mainWindow.webContents.send('result-recon-email-from-db', {insertData: true, error: false, recons: recons});
+  } catch (error) {
+    mainWindow.webContents.send('result-recon-email-from-db', {insertData: true, error: true, recons: recons});
+  }
+});
+
+ipcMain.on('fetch-recon-email-fromdb', (e, data) => {
+  let recons = [];
+
+  try {
+    recons = readAllReconEmail();
+    mainWindow.webContents.send('result-recon-email-from-db', {insertData: false, error: false, recons: recons});
+  } catch (error) {
+    mainWindow.webContents.send('result-recon-email-from-db', {insertData: false, error: true, recons: recons});
   }
 });
 

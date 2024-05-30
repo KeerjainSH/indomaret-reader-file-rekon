@@ -33,6 +33,8 @@ async function openTabReconPP(tabId) {
         document.getElementById("files-not-found").style.display = 'none';
         document.getElementById("filter").style.display = 'none';
 
+        await window.recon.fetchReconEmailFromDB();
+
     }
 }
 
@@ -40,9 +42,40 @@ async function insertReconPP() {
     var recon = document.getElementById("recon").value;
     var partner = document.getElementById("partner").value;
     if (recon && partner) {
+        await window.recon.addReconEmailToDB(recon, partner);
         document.getElementById("recon").value = "";
         document.getElementById("partner").value = "";
     } else {
         alert("Please enter a string.");
     }
 }
+
+window.recon.onFromIPCMain("result-recon-email-from-db", (e, data) => {
+    const {error, recons, insertData} = data;
+
+    if (error && !insertData) {
+        alert("Something went wrong while fetching data...");
+    }
+
+    if (error && insertData) {
+        alert("Failed to insert...");
+    }
+    if (!error && insertData) {
+        alert("Recon email inserted succesfully");
+    }
+
+    const container = document.getElementById("reconTab2");
+    if (!container) return;
+    const tableBody = container.querySelector("tbody");
+    tableBody.innerHTML = "";
+
+    recons.forEach((item, index) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+            <td>${index + 1}</td>
+            <td>${item.recon}</td>
+            <td>${item.partner}</td>
+        `;
+        tableBody.appendChild(row);
+    });
+});

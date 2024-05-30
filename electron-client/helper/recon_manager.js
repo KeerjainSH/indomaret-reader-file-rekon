@@ -17,6 +17,23 @@ const createReconTable = () => {
     }
 }
 
+const createReconEmailTable = () => {
+    try {
+        const createTableQuery = `
+            CREATE TABLE IF NOT EXISTS recon_email (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                recon TEXT NOT NULL,
+                partner TEXT NOT NULL
+            )
+        `;
+        db.exec(createTableQuery);
+        console.log("Table 'recon_email' is ready.");
+    } catch (err) {
+        console.error("Error creating table 'recon_email':", err);
+        throw err;
+    }
+}
+
 const readAllReconFile = () => {
     try {
         const query = `SELECT * FROM recon_ftp`;
@@ -49,8 +66,43 @@ const insertReconFile = (file_name) => {
     }
 }
 
+const readAllReconEmail = () => {
+    try {
+        const query = `SELECT * FROM recon_email`;
+        const readQuery = db.prepare(query);
+        const rowList = readQuery.all();
+        return rowList;
+    } catch (err) {
+        console.error(err);
+        throw err;
+    }
+}
+
+const insertReconEmail = (recon, partner) => {
+    try {
+        const insertQuery = db.prepare(
+            `INSERT INTO recon_email (recon, partner) VALUES ('${recon}', '${partner}')`
+        )
+
+        const transaction = db.transaction(() => {
+            const info = insertQuery.run()
+            console.log(
+                `Inserted ${info.changes} rows with last ID 
+                 ${info.lastInsertRowid} into recon_email`
+            )
+        })
+        transaction()
+    } catch (err) {
+        console.error(err)
+        throw err
+    }
+}
+
 module.exports = {
     createReconTable,
+    createReconEmailTable,
     readAllReconFile,
     insertReconFile,
+    readAllReconEmail,
+    insertReconEmail
 }
