@@ -82,7 +82,7 @@ window.recon.onFromIPCMain("result-recon-email-from-db", (e, data) => {
             <td>${index + 1}</td>
             <td>${item.recon}</td>
             <td>${item.partner}</td>
-            <td><button class="btn-delete" id="delete-${item.id}" onclick="deleteItemReconEmail(${item.id})">Delete</button></td>
+            <td><button class="btn-delete mx-5" id="delete-${item.id}" onclick="deleteItemReconEmail(${item.id})">x</button></td>
         `;
         tableBody.appendChild(row);
     });

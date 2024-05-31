@@ -561,16 +561,16 @@ async function fetchFilesFromFTP(client) {
         console.log("Connecting to FTP server...");
 
         await client.access({
-            host: process.env.FTP_HOST,
-            port: process.env.FTP_PORT, // Specify the port separately
-            user: process.env.FTP_USER,
-            password: process.env.FTP_PASSWORD, // Use the correct password as specified in docker-compose.yml
+            host: '127.0.0.1',
+            port: 21, // Specify the port separately
+            user: "user",
+            password: "password", // Use the correct password as specified in docker-compose.yml
             secure: false
         });
 
         console.log("Connected to FTP server.");
 
-        const files = await client.list(process.env.FTP_PATH);
+        const files = await client.list();
 
         return files;
     } catch (error) {
@@ -581,6 +581,37 @@ async function fetchFilesFromFTP(client) {
     }
 }
 
+async function sendFileToFTP(client, localFilePath, remoteFilePath) {
+    try {
+        console.log("Connecting to FTP server...");
+
+        await client.access({
+            host: '127.0.0.1',
+            port: 21, // Specify the port separately
+            user: "user",
+            password: "password", // Use the correct password as specified in docker-compose.yml
+            secure: false
+        });
+
+        console.log("Connected to FTP server.");
+
+        // Ensure localFilePath is a string to prevent TypeError [ERR_INVALID_ARG_TYPE]
+        if (typeof localFilePath !== 'string') {
+            throw new TypeError("The 'localFilePath' argument must be of type string.");
+        }
+
+        console.log(`Uploading file to ${remoteFilePath}...`, localFilePath, remoteFilePath)
+
+        await client.uploadFrom(localFilePath, remoteFilePath);
+
+        console.log(`File uploaded successfully to ${remoteFilePath}.`);
+    } catch (error) {
+        console.error("Error sending file to FTP server:", error);
+    } finally {
+        client.close();
+        console.log("FTP client closed.");
+    }
+}
 const generateFileNamesWithDates = (fileNames, startDate, endDate) => {
     const start = new Date(startDate);
     const end = new Date(endDate);
@@ -624,6 +655,7 @@ function checkingFiles(ftpFiles, fileNames, startDate, endDate) {
 
 module.exports = {
     fetchFilesFromFTP,
-    checkingFiles
+    checkingFiles,
+    sendFileToFTP
 }
 

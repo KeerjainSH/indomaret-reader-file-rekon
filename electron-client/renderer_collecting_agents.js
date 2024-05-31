@@ -1,3 +1,5 @@
+
+
 let founds = [];
 let notFounds = [];
 
@@ -121,12 +123,23 @@ window.recon.onFromIPCMain("result-ftp-filename-to-db", (e, data) => {
             row.innerHTML = `
                 <td>${index + 1}</td>
                 <td>${file.file_name}</td>
+                <td>
+                    <button class="btn-delete mx-5"  onclick="deleteFilename(${file.id})">x</button>
+                </td>
             `;
             tableBody.appendChild(row);
         });
 
     } else {
         alert("Something went wrong while fetching filenames...");
+    }
+})
+
+window.recon.onFromIPCMain("upload-file-to-ftp-result", (e, data) => {
+    if (data) {
+        alert("File uploaded successfully");
+    } else {
+        alert("Something went wrong while uploading file...");
     }
 })
 
@@ -137,5 +150,35 @@ async function insertFilename() {
         document.getElementById("filename").value = "";
     } else {
         alert("Please enter a string.");
+    }
+}
+
+async function deleteFilename(id) {
+    const confirmed = confirm("Are you sure you want to delete this item?");
+    if (confirmed) {
+        await window.recon.deleteFileNamesFromDB(id);
+    }
+}
+
+async function uploadFile() {
+    const fileInput = document.getElementById("file");
+    if (fileInput.files.length > 0) {
+        const file = fileInput.files[0];
+        
+        // Option to use a Blob URL instead of the OS library to handle the file temporarily
+        const blobUrl = URL.createObjectURL(file);
+        
+        try {
+            // Upload the file using the Blob URL
+            await window.recon.uploadFileToFTP(blobUrl);
+            
+            // Revoke the Blob URL after the upload is complete
+            URL.revokeObjectURL(blobUrl);
+        } catch (err) {
+            console.error('Error uploading file:', err);
+            alert("Failed to upload file.");
+        }
+    } else {
+        alert("Please select a file.");
     }
 }

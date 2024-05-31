@@ -34,6 +34,23 @@ const createReconEmailTable = () => {
     }
 }
 
+const createLogSendFileFTPTable = () => {
+    try {
+        const createTableQuery = `
+            CREATE TABLE IF NOT EXISTS log_send_file_ftp (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                file_name TEXT NOT NULL,
+                created_at TEXT NOT NULL
+            )
+        `;
+        db.exec(createTableQuery);
+        console.log("Table 'log_send_file_ftp' is ready.");
+    } catch (err) {
+        console.error("Error creating table 'log_send_file_ftp':", err);
+        throw err;
+    }
+}
+
 const readAllReconFile = () => {
     try {
         const query = `SELECT * FROM recon_ftp`;
@@ -65,6 +82,23 @@ const insertReconFile = (file_name) => {
         throw err
     }
 }
+
+const deleteReconFile = (id) => {
+    try {
+        const insertQuery = db.prepare(
+            `DELETE FROM recon_ftp WHERE id=${id}`
+        )
+
+        const transaction = db.transaction(() => {
+            const info = insertQuery.run();
+        })
+        transaction()
+    } catch (err) {
+        console.error(err)
+        throw err
+    }
+}
+
 
 const readAllReconEmail = () => {
     try {
@@ -118,9 +152,11 @@ const deleteReconEmail = (id) => {
 module.exports = {
     createReconTable,
     createReconEmailTable,
+    createLogSendFileFTPTable,
     readAllReconFile,
     insertReconFile,
+    deleteReconFile,
     readAllReconEmail,
     insertReconEmail,
-    deleteReconEmail
+    deleteReconEmail,
 }

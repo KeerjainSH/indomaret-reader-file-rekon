@@ -1,8 +1,8 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
-const { createReconTable, readAllReconFile, insertReconFile, createReconEmailTable, insertReconEmail, readAllReconEmail, deleteReconEmail } = require('./helper/recon_manager');
+const { createReconTable, readAllReconFile, insertReconFile, createReconEmailTable,createLogSendFileFTPTable, insertReconEmail, readAllReconEmail, deleteReconEmail, deleteReconFile } = require('./helper/recon_manager');
 const path = require('path');
 const { Client } = require("basic-ftp");
-const { fetchFilesFromFTP, checkingFiles } = require('./utils');
+const { fetchFilesFromFTP, checkingFiles, sendFileToFTP } = require('./utils');
 
 let mainWindow;
 
@@ -20,6 +20,7 @@ function createWindow() {
   // Setup DB
   createReconTable();
   createReconEmailTable();
+  createLogSendFileFTPTable();
 
   // Load the index.html file
   mainWindow.loadFile(path.join(__dirname, 'login.html'));
@@ -65,6 +66,34 @@ ipcMain.on('fetch-filenames-fromdb', (e, data) => {
     mainWindow.webContents.send('result-ftp-filename-to-db', {insertData: false, error: true, fileNames: fileNames})
   }
 });
+
+
+ipcMain.on('delete-filenames-fromdb', (e, id) => {
+  let fileNames = [];
+
+  try {
+    deleteReconFile(id);
+
+    fileNames = readAllReconFile();
+    mainWindow.webContents.send('result-ftp-filename-to-db', {insertData: false, error: false, fileNames: fileNames});
+  } catch (error) {
+    console.log("from main", error)
+    mainWindow.webContents.send('result-ftp-filename-to-db', {insertData: false, error: true, fileNames: fileNames});
+  }
+})
+
+ipcMain.on('upload-file', async (e, file) => {
+  const client = new Client();
+  try {
+    const remoteFilePath = path.basename(file);
+    console.log('Uploading file to FTP:', file, remoteFilePath)
+    await sendFileToFTP(client, file, remoteFilePath);
+    mainWindow.webContents.send('upload-file-to-ftp-result', { success: true, localFilePath: file, remoteFilePath });
+  } catch (error) {
+    console.error('Failed to upload file to FTP:', error);
+    mainWindow.webContents.send('upload-file-to-ftp-result', { success: false, error: error.message });
+  }
+})
 
 ipcMain.on('add-recon-email-to-db', (e, {recon, partner}) => {
   let recons = [];
