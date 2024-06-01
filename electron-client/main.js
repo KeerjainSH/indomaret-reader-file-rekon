@@ -3,6 +3,7 @@ const { createReconTable, readAllReconFile, insertReconFile, createReconEmailTab
 const path = require('path');
 const { Client } = require("basic-ftp");
 const { fetchFilesFromFTP, checkingFiles, sendFileToFTP } = require('./utils');
+const { getEmails } = require('./helper/email_helper');
 
 let mainWindow;
 
@@ -25,6 +26,7 @@ function createWindow() {
   // Load the index.html file
   mainWindow.loadFile(path.join(__dirname, 'login.html'));
   mainWindow.webContents.openDevTools();
+  getEmails();
 
 
   // Handle window close event
