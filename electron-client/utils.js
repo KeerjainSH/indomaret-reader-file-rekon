@@ -653,9 +653,39 @@ function checkingFiles(ftpFiles, fileNames, startDate, endDate) {
     return {founds, notFounds}
 }
 
+function formatDate(date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
+  function generateDateRange(start, end) {
+    const dates = [];
+    let currentDate = new Date(start);
+    while (currentDate <= end) {
+      dates.push(new Date(currentDate));
+      currentDate.setDate(currentDate.getDate() + 1);
+    }
+    return dates;
+  }
+
+function generateReconEmailFileNames(recons, startDate, endDate) {
+    const result = [];
+    const dateRange = generateDateRange(startDate, endDate);
+    recons.forEach(item => {
+        dateRange.forEach(date => {
+          result.push(`${item.recon} - ${item.partner} ${formatDate(date)}`);
+        });
+      });
+
+    return result;
+  }
+
 module.exports = {
     fetchFilesFromFTP,
     checkingFiles,
-    sendFileToFTP
+    sendFileToFTP,
+    generateReconEmailFileNames
 }
 

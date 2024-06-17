@@ -9,5 +9,6 @@ contextBridge.exposeInMainWorld("recon", {
   onFromIPCMain: (channel, cb) => ipcRenderer.on(channel, (event, ...args) => cb(event, ...args)),
   addReconEmailToDB: (recon, partner) => ipcRenderer.send('add-recon-email-to-db', {recon, partner}),
   fetchReconEmailFromDB: () => ipcRenderer.send('fetch-recon-email-fromdb'),
+  fetchReconEmail: (startDate, endDate) => ipcRenderer.send('fetch-recon-email', {startDate, endDate}),
   deleteReconEmailFromDB: (id) => ipcRenderer.send('delete-recon-email-fromdb', id)
 })

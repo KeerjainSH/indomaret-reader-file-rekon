@@ -1,3 +1,67 @@
+let globalFoundItems = []
+let globalNotFoundItems = []
+
+function handleChange(e) {
+    const selectedValue = e.target.value;
+
+    if (selectedValue === "All") {
+        const container = document.getElementById("reconTab1");
+        if (!container) return;
+        const tableBody = container.querySelector("tbody");
+        tableBody.innerHTML = "";
+
+        globalFoundItems.forEach((item, index) => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td>${index + 1}</td>
+                <td>${item}</td>
+                <td>OK</td>
+            `;
+            tableBody.appendChild(row);
+        });
+
+        globalNotFoundItems.forEach((item, index) => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td>${index + 1}</td>
+                <td>${item}</td>
+                <td>NOK</td>
+            `;
+            tableBody.appendChild(row);
+        });
+    } else if (selectedValue === "OK") {
+        const container = document.getElementById("reconTab1");
+        if (!container) return;
+        const tableBody = container.querySelector("tbody");
+        tableBody.innerHTML = "";
+
+        globalFoundItems.forEach((item, index) => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td>${index + 1}</td>
+                <td>${item}</td>
+                <td>OK</td>
+            `;
+            tableBody.appendChild(row);
+        });
+    } else {
+        const container = document.getElementById("reconTab1");
+        if (!container) return;
+        const tableBody = container.querySelector("tbody");
+        tableBody.innerHTML = "";
+
+        globalNotFoundItems.forEach((item, index) => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td>${index + 1}</td>
+                <td>${item}</td>
+                <td>NOK</td>
+            `;
+            tableBody.appendChild(row);
+        });
+    }
+}
+
 flatpickr('#dateRangeReconPP', {
     mode: 'range',
     onChange: async function(selectedDates, dateStr, instance) {
@@ -6,6 +70,8 @@ flatpickr('#dateRangeReconPP', {
             const endDate = selectedDates[1];
 
             document.getElementById("loading-recon-pp").style.display = 'block';
+
+            await window.recon.fetchReconEmail(startDate, endDate);
         }
     }
 });
@@ -56,6 +122,48 @@ async function deleteItemReconEmail(id) {
         await window.recon.deleteReconEmailFromDB(id);
     }
 }
+
+window.recon.onFromIPCMain("result-recon-email", (e, data) => {
+    document.getElementById("loading-recon-pp").style.display = 'none';
+    const { error, recon, insertData } = data;
+    const { foundItems, notFoundItems } = recon;
+    globalFoundItems = foundItems;
+    globalNotFoundItems = notFoundItems;
+
+    document.getElementById("files-found").textContent = `Status OK:  ${foundItems.length}`;
+    document.getElementById("files-not-found").textContent = `Status NOK: ${notFoundItems.length}`;
+
+    if (error && !insertData) {
+        alert("Something went wrong while fetching data...");
+    }
+
+    const container = document.getElementById("reconTab1");
+    if (!container) return;
+    const tableBody = container.querySelector("tbody");
+    tableBody.innerHTML = "";
+
+    foundItems.forEach((item, index) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+            <td>${index + 1}</td>
+            <td>${item}</td>
+            <td>OK</td>
+        `;
+        tableBody.appendChild(row);
+    });
+
+    notFoundItems.forEach((item, index) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+            <td>${index + 1}</td>
+            <td>${item}</td>
+            <td>NOK</td>
+        `;
+        tableBody.appendChild(row);
+    });
+
+
+})
 
 window.recon.onFromIPCMain("result-recon-email-from-db", (e, data) => {
     const {error, recons, insertData} = data;

@@ -2,7 +2,7 @@ const { app, BrowserWindow, ipcMain } = require('electron');
 const { createReconTable, readAllReconFile, insertReconFile, createReconEmailTable,createLogSendFileFTPTable, insertReconEmail, readAllReconEmail, deleteReconEmail, deleteReconFile } = require('./helper/recon_manager');
 const path = require('path');
 const { Client } = require("basic-ftp");
-const { fetchFilesFromFTP, checkingFiles, sendFileToFTP } = require('./utils');
+const { fetchFilesFromFTP, checkingFiles, sendFileToFTP, generateReconEmailFileNames } = require('./utils');
 const { getEmails } = require('./helper/email_helper');
 
 let mainWindow;
@@ -26,8 +26,6 @@ function createWindow() {
   // Load the index.html file
   mainWindow.loadFile(path.join(__dirname, 'login.html'));
   mainWindow.webContents.openDevTools();
-  getEmails();
-
 
   // Handle window close event
   mainWindow.on('closed', () => {
@@ -109,14 +107,44 @@ ipcMain.on('add-recon-email-to-db', (e, {recon, partner}) => {
   }
 });
 
-ipcMain.on('fetch-recon-email-fromdb', (e, data) => {
+ipcMain.on('fetch-recon-email-fromdb', async (e, data) => {
   let recons = [];
 
   try {
     recons = readAllReconEmail();
+
     mainWindow.webContents.send('result-recon-email-from-db', {insertData: false, error: false, recons: recons});
   } catch (error) {
     mainWindow.webContents.send('result-recon-email-from-db', {insertData: false, error: true, recons: recons});
+  }
+});
+
+ipcMain.on('fetch-recon-email', async (e, data) => {
+  const {startDate, endDate} = data;
+  let recons = [];
+
+  try {
+    recons = readAllReconEmail();
+    const reconFullnames = generateReconEmailFileNames(recons, startDate, endDate);
+    const subjects = await getEmails(startDate, endDate);
+
+    const foundItems = [];
+    const notFoundItems = [];
+
+    const subjectsTrimmedLower = subjects.map(item => item.trim().toLowerCase());
+
+    reconFullnames.forEach(item => {
+      const trimmedLowerItem = item.trim().toLowerCase();
+      if (subjectsTrimmedLower.includes(trimmedLowerItem)) {
+        foundItems.push(item);
+      } else {
+        notFoundItems.push(item);
+      }
+    });
+
+    mainWindow.webContents.send('result-recon-email', {insertData: false, error: false, recon: {foundItems, notFoundItems}});
+  } catch (error) {
+    mainWindow.webContents.send('result-recon-email', {insertData: false, error: true, recon: {foundItems, notFoundItems}});
   }
 });
 
