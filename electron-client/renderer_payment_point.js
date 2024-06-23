@@ -1,5 +1,7 @@
-let globalFoundItems = []
-let globalNotFoundItems = []
+let globalFoundItems = [];
+let globalNotFoundItems = [];
+let globalStartDate;
+let globalEndDate;
 
 function handleChange(e) {
     const selectedValue = e.target.value;
@@ -68,6 +70,8 @@ flatpickr('#dateRangeReconPP', {
         if (selectedDates.length === 2) {
             const startDate = selectedDates[0];
             const endDate = selectedDates[1];
+            globalStartDate = startDate;
+            globalEndDate = endDate;
 
             document.getElementById("loading-recon-pp").style.display = 'block';
 
@@ -194,4 +198,32 @@ window.recon.onFromIPCMain("result-recon-email-from-db", (e, data) => {
         `;
         tableBody.appendChild(row);
     });
+});
+
+function formatDateDDMMYYYY(date) {
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+
+    return `${day}/${month}/${year}`;
+}
+
+document.getElementById('exportButton').addEventListener('click', function() {
+    const name = document.getElementById('inputName').value;
+    if (name === "" || (globalFoundItems.length === 0 && globalNotFoundItems.length === 0)) {
+        alert("Please find data first!");
+        return;
+    }
+    
+    window.recon.exportToExcel(name, {globalFoundItems, globalNotFoundItems}, `${formatDateDDMMYYYY(globalStartDate)} - ${formatDateDDMMYYYY(globalEndDate)}`);
+});
+
+window.recon.onFromIPCMain("result-export-to-excel", (e, data) => {
+    const {error, msg} = data;
+    if(error) {
+        alert(msg);
+        return;
+    }
+
+    alert(msg);
 });

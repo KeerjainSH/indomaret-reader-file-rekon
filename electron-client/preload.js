@@ -10,5 +10,6 @@ contextBridge.exposeInMainWorld("recon", {
   addReconEmailToDB: (recon, partner) => ipcRenderer.send('add-recon-email-to-db', {recon, partner}),
   fetchReconEmailFromDB: () => ipcRenderer.send('fetch-recon-email-fromdb'),
   fetchReconEmail: (startDate, endDate) => ipcRenderer.send('fetch-recon-email', {startDate, endDate}),
-  deleteReconEmailFromDB: (id) => ipcRenderer.send('delete-recon-email-fromdb', id)
+  deleteReconEmailFromDB: (id) => ipcRenderer.send('delete-recon-email-fromdb', id),
+  exportToExcel: (name, reconData, reconDate) => ipcRenderer.send('export-to-excel', {name, reconData, reconDate})
 })

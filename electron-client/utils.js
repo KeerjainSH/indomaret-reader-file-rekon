@@ -682,10 +682,28 @@ function generateReconEmailFileNames(recons, startDate, endDate) {
     return result;
   }
 
+function convertLists(found, notFound) {
+  const result = [];
+  let counter = 1;
+
+  const processItem = (item, status) => {
+    const [part1, part2] = item.split(' - ');
+    const [bank, date] = part2.split(' ');
+    result.push([counter, part1, bank, date, status]);
+    counter++;
+  };
+
+  found.forEach(item => processItem(item, 'OK'));
+  notFound.forEach(item => processItem(item, 'NOK'));
+
+  return result;
+}
+
 module.exports = {
     fetchFilesFromFTP,
     checkingFiles,
     sendFileToFTP,
-    generateReconEmailFileNames
+    generateReconEmailFileNames,
+    convertLists
 }
 

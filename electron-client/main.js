@@ -1,8 +1,10 @@
-const { app, BrowserWindow, ipcMain } = require('electron');
+const { app, BrowserWindow, ipcMain, dialog } = require('electron');
 const { createReconTable, readAllReconFile, insertReconFile, createReconEmailTable,createLogSendFileFTPTable, insertReconEmail, readAllReconEmail, deleteReconEmail, deleteReconFile } = require('./helper/recon_manager');
 const path = require('path');
+const fs = require('fs');
+const xlsx = require('xlsx');
 const { Client } = require("basic-ftp");
-const { fetchFilesFromFTP, checkingFiles, sendFileToFTP, generateReconEmailFileNames } = require('./utils');
+const { fetchFilesFromFTP, checkingFiles, sendFileToFTP, generateReconEmailFileNames, convertLists } = require('./utils');
 const { getEmails } = require('./helper/email_helper');
 
 let mainWindow;
@@ -116,6 +118,39 @@ ipcMain.on('fetch-recon-email-fromdb', async (e, data) => {
     mainWindow.webContents.send('result-recon-email-from-db', {insertData: false, error: false, recons: recons});
   } catch (error) {
     mainWindow.webContents.send('result-recon-email-from-db', {insertData: false, error: true, recons: recons});
+  }
+});
+
+ipcMain.on('export-to-excel', async (e, data) => {
+  let { name, reconData, reconDate } = data;
+  let { globalFoundItems, globalNotFoundItems } = reconData;
+
+    const { filePath } = await dialog.showSaveDialog({
+      title: 'Save Excel File',
+      defaultPath: path.join(app.getPath('desktop'), 'data.xlsx'),
+      filters: [{ name: 'Excel Files', extensions: ['xlsx'] }]
+    });
+
+  if(filePath) {
+      const workbook = xlsx.utils.book_new();
+
+      const meta = [
+        [`Nama: ${name}`],
+        [`Tanggal: ${reconDate}`],
+        [""],
+        ["No", "Rekon PP", "Partner", "Status"],
+        ...convertLists(globalFoundItems, globalNotFoundItems),
+      ]
+
+      const worksheet = xlsx.utils.aoa_to_sheet(meta);
+
+      xlsx.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+
+      xlsx.writeFile(workbook, filePath);
+
+      mainWindow.webContents.send('result-export-to-excel', {error: false, msg: `File has been saved to ${filePath}`});
+  } else {
+      mainWindow.webContents.send('result-export-to-excel', {error: true, msg: `Error exporting file`});
   }
 });
 
