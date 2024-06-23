@@ -138,7 +138,7 @@ ipcMain.on('export-to-excel', async (e, data) => {
         [`Nama: ${name}`],
         [`Tanggal: ${reconDate}`],
         [""],
-        ["No", "Rekon PP", "Partner", "Status"],
+        ["No", "Rekon PP", "Partner", "Tanggal", "Status"],
         ...convertLists(globalFoundItems, globalNotFoundItems),
       ]
 
