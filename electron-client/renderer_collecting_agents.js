@@ -66,6 +66,13 @@ async function openTab(tabId) {
             `;
             notFoundTableBody.appendChild(row);
         });
+    } else if (tabId === "tab4") {
+        document.getElementById("files-found").style.display = 'none';
+        document.getElementById("files-not-found").style.display = 'none';
+
+        const page = 1;
+        await window.recon.fetchLogUploadedFiles(page);
+
     } else {
         document.getElementById("files-found").style.display = 'none';
         document.getElementById("files-not-found").style.display = 'none';
@@ -74,6 +81,31 @@ async function openTab(tabId) {
 
     }
 }
+
+window.recon.onFromIPCMain("result-fetch-log-uploaded-files", (e, data) => {
+    const { error, logs } = data;
+
+    if (error) {
+        alert("Error while fetching logs data");
+        return;
+    }
+
+    const container = document.getElementById("tab4");
+    if (!container) return;
+    const tableBody = container.querySelector("tbody");
+    tableBody.innerHTML = "";
+
+    logs.forEach((file, index) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+            <td>${index + 1}</td>
+            <td>${file.file_name}</td>
+            <td>${file.timestamp_utc}</td>
+        `; //ToDo: convert to local timezone
+        tableBody.appendChild(row);
+    });
+    
+});
 
 
 window.recon.onFromIPCMain("result-list-file", (e, data) => {

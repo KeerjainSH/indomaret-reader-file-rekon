@@ -186,6 +186,21 @@ const insertLogReconUploadFile = (file_name) => {
     }
 }
 
+const readLogReconUploadFile = (pageNumber) => {
+    const pageSize = 10;
+    const offset = (pageNumber - 1) * pageSize;
+
+    try {
+        const query = `SELECT * FROM log_send_file_ftp ORDER BY id DESC LIMIT ? OFFSET ?`;
+        const readQuery = db.prepare(query);
+        const rowList = readQuery.all(pageSize, offset);
+        return rowList;
+    } catch (err) {
+        console.error(err);
+        throw err;
+    }
+}
+
 
 module.exports = {
     createReconTable,
@@ -197,5 +212,6 @@ module.exports = {
     readAllReconEmail,
     insertReconEmail,
     deleteReconEmail,
-    insertLogReconUploadFile
+    insertLogReconUploadFile,
+    readLogReconUploadFile
 }
