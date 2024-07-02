@@ -163,14 +163,13 @@ async function deleteFilename(id) {
 async function uploadFile() {
     const fileInput = document.getElementById("file");
 
+    // ToDo: Should make loading while uploading files
+
     if (fileInput.files.length > 0) {
         const file = fileInput.files[0];
         
         try {
             await window.recon.uploadFileToFTP(file.path);
-            
-            // Revoke the Blob URL after the upload is complete
-            URL.revokeObjectURL(blobUrl);
         } catch (err) {
             console.error('Error uploading file:', err);
             alert("Failed to upload file.");

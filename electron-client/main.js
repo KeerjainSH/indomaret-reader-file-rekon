@@ -1,5 +1,5 @@
 const { app, BrowserWindow, ipcMain, dialog } = require('electron');
-const { createReconTable, readAllReconFile, insertReconFile, createReconEmailTable,createLogSendFileFTPTable, insertReconEmail, readAllReconEmail, deleteReconEmail, deleteReconFile } = require('./helper/recon_manager');
+const { createReconTable, readAllReconFile, insertReconFile, createReconEmailTable,createLogSendFileFTPTable, insertReconEmail, readAllReconEmail, deleteReconEmail, deleteReconFile, insertLogReconUploadFile } = require('./helper/recon_manager');
 const path = require('path');
 const fs = require('fs');
 const xlsx = require('xlsx');
@@ -90,6 +90,8 @@ ipcMain.on('upload-file', async (e, file) => {
     const remoteFilePath = path.basename(file);
     console.log('Uploading file to FTP:', file, remoteFilePath)
     await sendFileToFTP(client, file, remoteFilePath);
+    insertLogReconUploadFile(remoteFilePath);
+
     mainWindow.webContents.send('upload-file-to-ftp-result', { success: true, localFilePath: file, remoteFilePath });
   } catch (error) {
     console.error('Failed to upload file to FTP:', error);

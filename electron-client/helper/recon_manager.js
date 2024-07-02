@@ -17,6 +17,24 @@ const createReconTable = () => {
     }
 }
 
+// const createReconUploadFileTable = () => {
+//     try {
+//         const createTableQuery = `
+//             CREATE TABLE IF NOT EXISTS recon_ftp_upload (
+//                 id INTEGER PRIMARY KEY AUTOINCREMENT,
+//                 file_name TEXT NOT NULL,
+//                 timestamp_utc TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
+//             )
+//         `;
+//         db.exec(createTableQuery);
+//         console.log("Table 'recon_ftp_upload' is ready.");
+//     } catch (err) {
+//         console.error("Error creating table 'recon_ftp_upload':", err);
+//         throw err;
+//     }
+// }
+
 const createReconEmailTable = () => {
     try {
         const createTableQuery = `
@@ -40,7 +58,7 @@ const createLogSendFileFTPTable = () => {
             CREATE TABLE IF NOT EXISTS log_send_file_ftp (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 file_name TEXT NOT NULL,
-                created_at TEXT NOT NULL
+                timestamp_utc TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         `;
         db.exec(createTableQuery);
@@ -148,6 +166,26 @@ const deleteReconEmail = (id) => {
     }
 }
 
+const insertLogReconUploadFile = (file_name) => {
+    try {
+        const insertQuery = db.prepare(
+            `INSERT INTO log_send_file_ftp (file_name) VALUES ('${file_name}')`
+        )
+
+        const transaction = db.transaction(() => {
+            const info = insertQuery.run()
+            console.log(
+                `Inserted ${info.changes} rows with last ID 
+                 ${info.lastInsertRowid} into log_send_file_ftp`
+            )
+        })
+        transaction()
+    } catch (err) {
+        console.error(err)
+        throw err
+    }
+}
+
 
 module.exports = {
     createReconTable,
@@ -159,4 +197,5 @@ module.exports = {
     readAllReconEmail,
     insertReconEmail,
     deleteReconEmail,
+    insertLogReconUploadFile
 }
