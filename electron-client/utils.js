@@ -586,7 +586,7 @@ async function sendFileToFTP(client, localFilePath, remoteFilePath) {
         console.log("Connecting to FTP server...");
 
         await client.access({
-            host: '127.0.0.1',
+            host: 'ftp.ftp-server.orb.local',
             port: 21, // Specify the port separately
             user: "user",
             password: "password", // Use the correct password as specified in docker-compose.yml

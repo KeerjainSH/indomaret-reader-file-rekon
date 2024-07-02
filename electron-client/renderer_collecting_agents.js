@@ -162,15 +162,12 @@ async function deleteFilename(id) {
 
 async function uploadFile() {
     const fileInput = document.getElementById("file");
+
     if (fileInput.files.length > 0) {
         const file = fileInput.files[0];
         
-        // Option to use a Blob URL instead of the OS library to handle the file temporarily
-        const blobUrl = URL.createObjectURL(file);
-        
         try {
-            // Upload the file using the Blob URL
-            await window.recon.uploadFileToFTP(blobUrl);
+            await window.recon.uploadFileToFTP(file.path);
             
             // Revoke the Blob URL after the upload is complete
             URL.revokeObjectURL(blobUrl);
