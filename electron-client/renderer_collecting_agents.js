@@ -1,4 +1,38 @@
-
+const Pagination = tui.Pagination;
+const paginationContainer = document.getElementById('pagination-container');
+const options = {
+    totalItems: 0,
+    itemsPerPage: 10,
+    visiblePages: 10,
+    page: 1,
+    centerAlign: false,
+    firstItemClassName: 'tui-first-child',
+    lastItemClassName: 'tui-last-child',
+    template: {
+      page: '<a href="#" class="tui-page-btn">{{page}}</a>',
+      currentPage: '<strong class="tui-page-btn tui-is-selected">{{page}}</strong>',
+      moveButton:
+        '<a href="#" class="tui-page-btn tui-{{type}}">' +
+          '<span class="tui-ico-{{type}}">{{type}}</span>' +
+        '</a>',
+      disabledMoveButton:
+        '<span class="tui-page-btn tui-is-disabled tui-{{type}}">' +
+          '<span class="tui-ico-{{type}}">{{type}}</span>' +
+        '</span>',
+      moreButton:
+        '<a href="#" class="tui-page-btn tui-{{type}}-is-ellip">' +
+          '<span class="tui-ico-ellip">...</span>' +
+        '</a>'
+    }
+  };
+  const instance = new Pagination(paginationContainer, options);
+  let prevPage = instance.getCurrentPage();
+  instance.on("afterMove", async (e) => {
+    if (prevPage !== e.page) {
+        prevPage = e.page;
+        await window.recon.fetchLogUploadedFiles(e.page);
+    }
+  });
 
 let founds = [];
 let notFounds = [];
@@ -83,11 +117,16 @@ async function openTab(tabId) {
 }
 
 window.recon.onFromIPCMain("result-fetch-log-uploaded-files", (e, data) => {
-    const { error, logs } = data;
+    const { error, logs, totalLog } = data;
 
     if (error) {
         alert("Error while fetching logs data");
         return;
+    }
+
+    if (logs.length > 0) {
+        instance.reset(totalLog);
+        instance.movePageTo(prevPage);
     }
 
     const container = document.getElementById("tab4");
@@ -167,9 +206,11 @@ window.recon.onFromIPCMain("result-ftp-filename-to-db", (e, data) => {
     }
 })
 
-window.recon.onFromIPCMain("upload-file-to-ftp-result", (e, data) => {
+window.recon.onFromIPCMain("upload-file-to-ftp-result", async (e, data) => {
     if (data) {
         alert("File uploaded successfully");
+        const page = 1;
+        await window.recon.fetchLogUploadedFiles(page);
     } else {
         alert("Something went wrong while uploading file...");
     }
@@ -199,7 +240,6 @@ async function uploadFile() {
 
     if (fileInput.files.length > 0) {
         const file = fileInput.files[0];
-        
         try {
             await window.recon.uploadFileToFTP(file.path);
         } catch (err) {
@@ -209,4 +249,6 @@ async function uploadFile() {
     } else {
         alert("Please select a file.");
     }
+
+    fileInput.value = ""
 }

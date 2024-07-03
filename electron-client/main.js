@@ -1,5 +1,5 @@
 const { app, BrowserWindow, ipcMain, dialog } = require('electron');
-const { createReconTable, readAllReconFile, insertReconFile, createReconEmailTable,createLogSendFileFTPTable, insertReconEmail, readAllReconEmail, deleteReconEmail, deleteReconFile, insertLogReconUploadFile, readLogReconUploadFile } = require('./helper/recon_manager');
+const { createReconTable, readAllReconFile, insertReconFile, createReconEmailTable,createLogSendFileFTPTable, insertReconEmail, readAllReconEmail, deleteReconEmail, deleteReconFile, insertLogReconUploadFile, readLogReconUploadFile, countAllLogReconUploadFile } = require('./helper/recon_manager');
 const path = require('path');
 const fs = require('fs');
 const xlsx = require('xlsx');
@@ -69,13 +69,13 @@ ipcMain.on('fetch-filenames-fromdb', (e, data) => {
   }
 });
 
-ipcMain.on('fetch-log-uploaded-files', (e, page) => {
+ipcMain.on('fetch-log-uploaded-files', async (e, page) => {
   try {
     const logs = readLogReconUploadFile(page);
-
-    mainWindow.webContents.send('result-fetch-log-uploaded-files', {error: false, logs: logs});
+    const totalLog = countAllLogReconUploadFile();
+    mainWindow.webContents.send('result-fetch-log-uploaded-files', {error: false, logs: logs, totalLog: totalLog[0].total});
   } catch (error) {
-    mainWindow.webContents.send('result-fetch-log-uploaded-files', {error: true, logs: []});
+    mainWindow.webContents.send('result-fetch-log-uploaded-files', {error: true, logs: [], totalLog: 0});
   }
 })
 

@@ -173,6 +173,13 @@ th:first-child, td:first-child {
     width: 40px;
     text-align: center;
 }
+
+.content-tab4 {
+ height: 100%;
+ display: flex;
+ flex-direction: column;
+ justify-content: space-between;
+}
 /* End Tab */
 
 /* Start Update Filename */

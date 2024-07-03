@@ -201,6 +201,18 @@ const readLogReconUploadFile = (pageNumber) => {
     }
 }
 
+const countAllLogReconUploadFile = () => {
+    try {
+        const query = `SELECT count(*) as total FROM log_send_file_ftp;`;
+        const readQuery = db.prepare(query);
+        const rowList = readQuery.all();
+        return rowList;
+    } catch (err) {
+        console.error(err);
+        throw err;
+    }
+}
+
 
 module.exports = {
     createReconTable,
@@ -213,5 +225,6 @@ module.exports = {
     insertReconEmail,
     deleteReconEmail,
     insertLogReconUploadFile,
-    readLogReconUploadFile
+    readLogReconUploadFile,
+    countAllLogReconUploadFile
 }
