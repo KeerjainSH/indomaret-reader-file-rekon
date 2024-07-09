@@ -14,6 +14,7 @@
   "dependencies": {
     "basic-ftp": "^5.0.5",
     "better-sqlite3": "^10.0.0",
+    "dotenv": "^16.4.5",
     "electron": "^29.1.5",
     "flatpickr": "^4.6.13",
     "ftp": "^0.3.10",

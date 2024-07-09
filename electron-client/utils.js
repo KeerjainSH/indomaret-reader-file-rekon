@@ -561,10 +561,10 @@ async function fetchFilesFromFTP(client) {
         console.log("Connecting to FTP server...");
 
         await client.access({
-            host: '127.0.0.1',
-            port: 21, // Specify the port separately
-            user: "user",
-            password: "password", // Use the correct password as specified in docker-compose.yml
+            host: FTP_HOST,
+            port: FTP_PORT, // Specify the port separately
+            user: FTP_USER,
+            password: FTP_PASSWORD, // Use the correct password as specified in docker-compose.yml
             secure: false
         });
 
@@ -586,10 +586,10 @@ async function sendFileToFTP(client, localFilePath, remoteFilePath) {
         console.log("Connecting to FTP server...");
 
         await client.access({
-            host: 'ftp.ftp-server.orb.local',
-            port: 21, // Specify the port separately
-            user: "user",
-            password: "password", // Use the correct password as specified in docker-compose.yml
+            host: FTP_HOST,
+            port: FTP_PORT, // Specify the port separately
+            user: FTP_USER,
+            password: FTP_PASSWORD, // Use the correct password as specified in docker-compose.yml
             secure: false
         });
 
