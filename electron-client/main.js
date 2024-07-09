@@ -1,3 +1,4 @@
+require('dotenv').config();
 const { app, BrowserWindow, ipcMain, dialog } = require('electron');
 const { createReconTable, readAllReconFile, insertReconFile, createReconEmailTable,createLogSendFileFTPTable, insertReconEmail, readAllReconEmail, deleteReconEmail, deleteReconFile, insertLogReconUploadFile, readLogReconUploadFile, countAllLogReconUploadFile } = require('./helper/recon_manager');
 const path = require('path');
