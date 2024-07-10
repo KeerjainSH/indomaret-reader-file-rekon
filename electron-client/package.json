@@ -1,21 +1,23 @@
 {
   "name": "ca-and-rekon-checker",
+  "productName": "CA and Rekon Checker",
   "version": "1.0.0",
-  "description": "",
+  "description": "An app for rekon",
   "main": "main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "rebuild": "electron-rebuild -f -w better-sqlite3",
     "start": "electron .",
-    "install": "npx electron-packager . --overwrite --platform=win32 --arch=x64 --out=release-builds --icon=assets/icons/win/icon.ico --prune=true --executable-name=ca-and-rekon-checker"
+    "install": "npx electron-packager . --overwrite --platform=win32 --arch=x64 --out=release-builds --icon=assets/icons/win/icon.ico --prune=true --executable-name=ca-and-rekon-checker",
+    "package": "electron-builder --dir",
+    "postinstall": "electron-builder install-app-deps"
   },
-  "author": "",
+  "author": "xfa",
   "license": "ISC",
   "dependencies": {
     "basic-ftp": "^5.0.5",
     "better-sqlite3": "^10.0.0",
     "dotenv": "^16.4.5",
-    "electron": "^29.1.5",
     "flatpickr": "^4.6.13",
     "ftp": "^0.3.10",
     "imap": "^0.8.19",
@@ -25,9 +27,14 @@
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
+    "electron": "^31.2.0",
+    "electron-builder": "^24.13.3",
     "electron-packager": "^17.1.2",
     "electron-rebuild": "^3.2.9",
     "electron-reload": "^2.0.0-alpha.1",
     "electron-winstaller": "^5.3.1"
+  },
+  "build": {
+    "appId": "com.CAandRekonChecker"
   }
 }
