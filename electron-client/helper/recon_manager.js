@@ -1,15 +1,30 @@
-const dbmgr = require("./db_manager")
-const db = dbmgr.db
+const mysql = require('mysql2/promise');
 
-const createReconTable = () => {
+let pool;
+
+const getPool = async () => {
+  if (!pool) {
+    pool = mysql.createPool({
+      host: 'localhost',
+      user: 'root',
+      password: '',
+      database: 'indomaret-rekon'
+    });
+  }
+  return pool;
+}
+
+const createReconTable = async () => {
     try {
+        const pool = await getPool();
+
         const createTableQuery = `
-            CREATE TABLE IF NOT EXISTS recon_ftp (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                file_name TEXT NOT NULL
-            )
+        CREATE TABLE IF NOT EXISTS recon_ftp (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            file_name VARCHAR(255) NOT NULL
+          )
         `;
-        db.exec(createTableQuery);
+        await pool.query(createTableQuery);
         console.log("Table 'recon_ftp' is ready.");
     } catch (err) {
         console.error("Error creating table 'recon_ftp':", err);
@@ -27,7 +42,7 @@ const createReconTable = () => {
 
 //             )
 //         `;
-//         db.exec(createTableQuery);
+//         db.query(createTableQuery);
 //         console.log("Table 'recon_ftp_upload' is ready.");
 //     } catch (err) {
 //         console.error("Error creating table 'recon_ftp_upload':", err);
@@ -35,16 +50,18 @@ const createReconTable = () => {
 //     }
 // }
 
-const createReconEmailTable = () => {
+const createReconEmailTable = async() => {
     try {
+      const pool = await getPool();
+
         const createTableQuery = `
             CREATE TABLE IF NOT EXISTS recon_email (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                id INTEGER AUTO_INCREMENT PRIMARY KEY,
                 recon TEXT NOT NULL,
                 partner TEXT NOT NULL
             )
         `;
-        db.exec(createTableQuery);
+        await pool.query(createTableQuery);
         console.log("Table 'recon_email' is ready.");
     } catch (err) {
         console.error("Error creating table 'recon_email':", err);
@@ -52,16 +69,18 @@ const createReconEmailTable = () => {
     }
 }
 
-const createLogSendFileFTPTable = () => {
+const createLogSendFileFTPTable = async () => {
     try {
+      const pool = await getPool();
+
         const createTableQuery = `
             CREATE TABLE IF NOT EXISTS log_send_file_ftp (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                id INTEGER AUTO_INCREMENT PRIMARY KEY,
                 file_name TEXT NOT NULL,
                 timestamp_utc TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         `;
-        db.exec(createTableQuery);
+        await pool.query(createTableQuery);
         console.log("Table 'log_send_file_ftp' is ready.");
     } catch (err) {
         console.error("Error creating table 'log_send_file_ftp':", err);
@@ -69,48 +88,38 @@ const createLogSendFileFTPTable = () => {
     }
 }
 
-const readAllReconFile = () => {
+const readAllReconFile = async () => {
     try {
-        const query = `SELECT * FROM recon_ftp`;
-        const readQuery = db.prepare(query);
-        const rowList = readQuery.all();
-        return rowList;
+      const pool = await getPool();
+      const query = `SELECT * FROM recon_ftp`;
+      const [results] = await pool.query(query);
+      return results;
     } catch (err) {
-        console.error(err);
-        throw err;
+      console.error(err);
+      throw err;
     }
-}
+  }
 
-const insertReconFile = (file_name) => {
+const insertReconFile = async (file_name) => {
     try {
-        const insertQuery = db.prepare(
+      const pool = await getPool();
+
+        const insertQuery = await pool.query(
             `INSERT INTO recon_ftp (file_name) VALUES ('${file_name}')`
         )
-
-        const transaction = db.transaction(() => {
-            const info = insertQuery.run()
-            console.log(
-                `Inserted ${info.changes} rows with last ID 
-                 ${info.lastInsertRowid} into recon_ftp`
-            )
-        })
-        transaction()
     } catch (err) {
         console.error(err)
         throw err
     }
 }
 
-const deleteReconFile = (id) => {
+const deleteReconFile = async (id) => {
     try {
-        const insertQuery = db.prepare(
+        const pool = await getPool();
+
+        const deleteQuery  = await pool.query(
             `DELETE FROM recon_ftp WHERE id=${id}`
         )
-
-        const transaction = db.transaction(() => {
-            const info = insertQuery.run();
-        })
-        transaction()
     } catch (err) {
         console.error(err)
         throw err
@@ -118,95 +127,79 @@ const deleteReconFile = (id) => {
 }
 
 
-const readAllReconEmail = () => {
+const readAllReconEmail = async () => {
     try {
+        const pool = await getPool();
+        
         const query = `SELECT * FROM recon_email`;
-        const readQuery = db.prepare(query);
-        const rowList = readQuery.all();
-        return rowList;
+        const [rows] = await pool.query(query);
+        return rows;
     } catch (err) {
         console.error(err);
         throw err;
     }
 }
 
-const insertReconEmail = (recon, partner) => {
+const insertReconEmail = async (recon, partner) => {
     try {
-        const insertQuery = db.prepare(
+        const pool = await getPool();
+
+        const insertQuery = await pool.query(
             `INSERT INTO recon_email (recon, partner) VALUES ('${recon}', '${partner}')`
         )
-
-        const transaction = db.transaction(() => {
-            const info = insertQuery.run()
-            console.log(
-                `Inserted ${info.changes} rows with last ID 
-                 ${info.lastInsertRowid} into recon_email`
-            )
-        })
-        transaction()
     } catch (err) {
         console.error(err)
         throw err
     }
 }
 
-const deleteReconEmail = (id) => {
+const deleteReconEmail = async(id) => {
     try {
-        const insertQuery = db.prepare(
+        const pool = await getPool();
+
+        const insertQuery = await pool.query(
             `DELETE FROM recon_email WHERE id=${id}`
         )
-
-        const transaction = db.transaction(() => {
-            const info = insertQuery.run();
-        })
-        transaction()
     } catch (err) {
         console.error(err)
         throw err
     }
 }
 
-const insertLogReconUploadFile = (file_name) => {
+const insertLogReconUploadFile = async (file_name) => {
     try {
-        const insertQuery = db.prepare(
+        const insertQuery = await pool.query(
             `INSERT INTO log_send_file_ftp (file_name) VALUES ('${file_name}')`
         )
-
-        const transaction = db.transaction(() => {
-            const info = insertQuery.run()
-            console.log(
-                `Inserted ${info.changes} rows with last ID 
-                 ${info.lastInsertRowid} into log_send_file_ftp`
-            )
-        })
-        transaction()
     } catch (err) {
         console.error(err)
         throw err
     }
 }
 
-const readLogReconUploadFile = (pageNumber) => {
+const readLogReconUploadFile = async (pageNumber) => {
     const pageSize = 10;
     const offset = (pageNumber - 1) * pageSize;
 
     try {
+        const pool = await getPool();
+
         const query = `SELECT * FROM log_send_file_ftp ORDER BY id DESC LIMIT ? OFFSET ?`;
-        const readQuery = db.prepare(query);
-        const rowList = readQuery.all(pageSize, offset);
-        return rowList;
+        const [rows] = await pool.query(query,  [pageSize, offset]);
+        return rows;
     } catch (err) {
         console.error(err);
         throw err;
     }
 }
 
-const countAllLogReconUploadFile = () => {
+const countAllLogReconUploadFile = async () => {
     try {
+        const pool = await getPool();
+
         const query = `SELECT count(*) as total FROM log_send_file_ftp;`;
-        const readQuery = db.prepare(query);
-        const rowList = readQuery.all();
-        return rowList;
+        const [rows] = await pool.query(query);
+        return rows;
     } catch (err) {
         console.error(err);
         throw err;

@@ -570,7 +570,7 @@ async function fetchFilesFromFTP(client) {
 
         console.log("Connected to FTP server.");
 
-        const files = await client.list();
+        const files = await client.list(process.env.FTP_PATH);
 
         return files;
     } catch (error) {
