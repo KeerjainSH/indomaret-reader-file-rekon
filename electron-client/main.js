@@ -99,7 +99,7 @@ ipcMain.on('delete-filenames-fromdb', async (e, id) => {
 ipcMain.on('upload-file', async (e, file) => {
   const client = new Client();
   try {
-    const remoteFilePath = './data/customer/' + path.basename(file);
+    const remoteFilePath = process.env.FTP_PATH + path.basename(file);
     console.log('Uploading file to FTP:', file, remoteFilePath)
     await sendFileToFTP(client, file, remoteFilePath);
     insertLogReconUploadFile(path.basename(file));
